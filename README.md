@@ -1,125 +1,199 @@
-# Home Assistant Local macOS TTS/STT Bridge
+# Home Assistant STT/TTS Bridge Integration 🏠🎤
 
-<img src="icon.png" width="200" align="right" alt="STT Bridge Logo">
+> ⚠️ **Experimental & AI-Generated** - This integration was developed with AI assistance and is in active development. Expect bugs and breaking changes!
 
-A custom component for Home Assistant that acts as a bridge to a local server on macOS for Text-to-Speech (TTS) and Speech-to-Text (STT).
+Home Assistant Custom Integration for connecting to the [macOS STT/TTS Bridge Server](https://github.com/daydy16/macos-stt-tts-bridge).
 
-## Overview
+Use Apple's high-quality, **100% local** Speech Recognition and Text-to-Speech directly in Home Assistant - no cloud, maximum privacy!
 
-This integration allows you to use the native speech capabilities of macOS (like Siri voices and dictation) directly in Home Assistant, without relying on cloud services. Communication happens locally between Home Assistant and a separate server running on your Mac.
+## ✨ Features
 
-**Important Note:** This repository only contains the Home Assistant integration (`sttbridge`). You need a compatible server running on your macOS device. A reference implementation for the server can be found in a separate project.
+- 🎯 **Native macOS Speech Recognition** - High-precision voice recognition
+- 🗣️ **Premium TTS Voices** - Natural-sounding Apple voices
+- ⚡ **WebSocket Streaming** - Real-time STT with minimal latency
+- 🔒 **100% Local** - All data stays on your Mac
+- 🌍 **Multi-Language** - German, English, and many more
+- 🎨 **Voice Assist Integration** - Seamless integration with HA Assist Pipeline
 
-## Features
+## 📋 Prerequisites
 
--   **Text-to-Speech (TTS):** Convert text into spoken language using the voices installed on your Mac.
--   **Speech-to-Text (STT):** Convert spoken language from the Home Assistant Assist microphone into text.
--   **Local & Private:** All data remains within your local network. No data is sent to external cloud services.
--   **Simple Configuration:** Set up via the Home Assistant UI.
+1. **macOS Device** with macOS 13.0+
+2. **STT/TTS Bridge Server** running on the Mac
+   - Download: [macos-stt-tts-bridge Releases](https://github.com/daydy16/macos-stt-tts-bridge/releases)
+   - Or build from source
+3. **Home Assistant** 2024.1.0+ 
+4. (Optional) **HACS** for easy installation
 
-## Prerequisites
-
--   Home Assistant (Version 2023.5 or newer).
--   A macOS device running the companion server.
--   Network access from Home Assistant to the macOS device.
-
-## Installation
+## 🚀 Installation
 
 ### Method 1: HACS (Recommended)
 
-1.  Ensure you have [HACS](https://hacs.xyz/) installed.
-2.  Go to HACS > Integrations.
-3.  Add this repository as a "Custom repository":
-    -   URL: `https://github.com/david-ha-local-macos-tts-stt`
-    -   Category: `Integration`
-4.  Search for "STT Bridge" and install the integration.
-5.  Restart Home Assistant.
+1. **Open HACS** in Home Assistant
+2. Click the **three dots** in the top right
+3. Select **Custom repositories**
+4. Add:
+   - **Repository:** `https://github.com/daydy16/ha-local-macos-tts-stt`
+   - **Category:** `Integration`
+5. Click **Add**
+6. Search for **"STT/TTS Bridge"**
+7. Click **Download**
+8. **Restart Home Assistant**
 
-### Method 2: Manual Installation
+### Method 2: Manual
 
-1.  Download the latest version from the [Releases Tab](https://github.com/david-ha-local-macos-tts-stt/releases).
-2.  Unzip the downloaded file.
-3.  Copy the `custom_components/sttbridge` folder into your Home Assistant `config` directory.
-4.  Restart Home Assistant.
+```bash
+cd /config  # Your HA config directory
+mkdir -p custom_components
+cd custom_components
+git clone https://github.com/daydy16/ha-local-macos-tts-stt.git sttbridge
+```
 
-## Configuration
+Then restart Home Assistant.
 
-After installation, you need to configure the integration.
+## ⚙️ Configuration
 
-1.  Go to **Settings > Devices & Services**.
-2.  Click **Add Integration**.
-3.  Search for "STT Bridge" and select it.
-4.  Enter the following information:
-    -   **Host:** The IP address of your Mac (e.g., `192.168.1.10`).
-    -   **Port:** The port the server is running on (Default: `8787`).
-    -   **Token (optional):** If your server requires authentication, enter the bearer token here.
-5.  Click "Submit". The integration will verify the connection to the server.
+### 1. Prepare Server
 
-## Usage
+Make sure the macOS STT/TTS Bridge Server is running:
 
-### Text-to-Speech (TTS)
+```bash
+# Check if server is reachable
+curl http://localhost:8787/voices
 
-The integration creates a `tts.stt_bridge` service. You can use it in your automations or scripts.
+# Should return JSON with available voices
+```
 
-**Example: Service Call**
+### 2. Add Integration
+
+1. Go to **Settings → Devices & Services**
+2. Click **+ Add Integration**
+3. Search for **"STT/TTS Bridge"**
+4. Enter:
+   - **Host:** IP of your Mac (e.g., `192.168.1.100` or `localhost` if on same device)
+   - **Port:** `8787` (default)
+   - **(Optional) Token:** If you enabled auth on the server
+
+### 3. Use in Assist Pipeline
+
+#### For Voice Assistants:
+
+1. **Settings → Voice Assistants → Assist**
+2. Create new pipeline or edit existing:
+   - **Speech-to-Text:** `STT/TTS Bridge STT`
+   - **Text-to-Speech:** `STT/TTS Bridge TTS`
+   - **Language:** `en-US` (or your language)
+3. **Save**
+
+#### Test:
+
+Talk to your Voice Assistant:
+- "Hey Assistant, what's the weather?"
+- The response should come with Apple voice! 🎉
+
+## 🎯 Usage
+
+### In Automations (TTS)
 
 ```yaml
 service: tts.speak
 target:
-  entity_id: media_player.your_speaker
+  entity_id: tts.stt_tts_bridge
 data:
-  message: "Hello world! This is a test."
-  cache: false
-  language: "en-US"
-  options:
-    voice: "Alex" # Optional: select a voice
+  message: "The front door is open!"
+  language: en-US
+  media_player_entity_id: media_player.living_room
 ```
 
-### Speech-to-Text (STT)
+### STT Event Listener
 
-You can set "STT Bridge" as the default STT processor for Assist.
+```yaml
+automation:
+  - alias: "Voice Command Test"
+    trigger:
+      - platform: event
+        event_type: stt_end
+        event_data:
+          text: "lights on"
+    action:
+      - service: light.turn_on
+        target:
+          entity_id: light.living_room
+```
 
-1.  Open the Home Assistant Companion App or a Lovelace view with the Assist microphone.
-2.  Press and hold the microphone icon to open the settings.
-3.  Under "Speech-to-text", select the "STT Bridge" option.
+## 🐛 Troubleshooting
 
-## Server API Requirements
-
-Your macOS server must provide the following endpoints:
-
--   `GET /healthz`: A simple endpoint that returns a `200 OK` status code if the server is ready.
--   `POST /tts`:
-    -   Accepts a JSON payload: `{"text": "...", "language": "...", "voice": "..."}`.
-    -   Returns an `audio/wav` file in the response body.
--   `POST /stt`:
-    -   Accepts `audio/wav` data in the request body.
-    -   Returns a JSON response: `{"text": "recognized text"}`.
--   `GET /voices` (Optional):
-    -   Gives a JSON list of available voices.
-
-## Testing
-
-To run the tests for this custom component, you will need a Python environment with `pytest` and `pytest-homeassistant-custom-component` installed.
-
-### Prerequisites
-
-1.  **Python 3.9+**: Ensure you have a compatible Python version.
-2.  **Install `pytest` and `pytest-homeassistant-custom-component`**:
-
-    ```bash
-    pip install pytest pytest-homeassistant-custom-component
-    ```
-
-### Running Tests
-
-Navigate to the root directory of this repository and execute `pytest`:
+### Server Not Reachable
 
 ```bash
-pytest
+# Check if server is running
+ps aux | grep STTBridge
+
+# Check network
+curl http://<mac-ip>:8787/voices
+
+# Check logs (if running as service)
+tail -f /tmp/sttbridge.log
 ```
 
-This will discover and run all tests within the `custom_components/sttbridge/tests/` directory.
+### STT Not Working
 
-## License
+1. **Microphone Permission:** Ensure STTBridge.app has microphone access
+2. **Audio Format:** Integration sends 16kHz, 16-bit, mono WAV
+3. **Logs:** Check HA Logs: `Settings → System → Logs`
 
-This project is licensed under the Apache 2.0 License.
+### TTS No Output
+
+1. **Voice Available?** Check `/voices` endpoint
+2. **Language Correct?** e.g., `en-US` not just `en`
+3. **Audio Player:** Test with `curl` if server returns WAV
+
+### Performance
+
+If STT is slow:
+- ✅ WebSocket Streaming is already used (v0.1.8+)
+- ✅ In-Memory Processing (no temp files)
+- ✅ Cached Recognizers
+
+Expected times:
+- **UI (direct):** ~0.06s
+- **HA (via Integration):** ~0.5-1.5s (depends on audio length)
+
+## 📊 Performance Optimizations (v0.1.8+)
+
+This version uses:
+- ✅ **WebSocket Streaming** instead of HTTP POST - Chunks processed immediately
+- ✅ **In-Memory Audio Processing** - no disk I/O
+- ✅ **Cached Speech Recognizers** - eliminates initialization overhead
+- ✅ **Optimized Headers** - X-Sample-Rate & X-Channel-Count for direct processing
+
+## 🤝 Contributing
+
+Pull Requests are welcome! For major changes, please open an issue first.
+
+## 📝 License
+
+MIT License
+
+## ⚠️ Disclaimer
+
+**Experimental AI-Generated Project!**
+
+This integration was developed with AI assistance (GitHub Copilot) and is a proof-of-concept.
+It is provided "as-is" without warranties. Use at your own risk!
+
+### Known Limitations
+
+- ⚠️ Streaming works well, but not as fast as direct UI usage
+- ⚠️ No batch processing
+- ⚠️ Minimal error recovery
+- ⚠️ No unit tests (yet)
+
+## 🔗 Links
+
+- **Backend Server:** [macos-stt-tts-bridge](https://github.com/daydy16/macos-stt-tts-bridge)
+- **Home Assistant:** [home-assistant.io](https://www.home-assistant.io/)
+- **Apple Speech Framework:** [developer.apple.com](https://developer.apple.com/documentation/speech)
+
+---
+
+**Found this helpful? Give it a star! ⭐**
