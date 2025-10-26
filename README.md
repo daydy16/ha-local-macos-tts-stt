@@ -93,7 +93,30 @@ Your macOS server must provide the following endpoints:
     -   Accepts `audio/wav` data in the request body.
     -   Returns a JSON response: `{"text": "recognized text"}`.
 -   `GET /voices` (Optional):
-    -   Returns a JSON list of available voices.
+    -   Gives a JSON list of available voices.
+
+## Testing
+
+To run the tests for this custom component, you will need a Python environment with `pytest` and `pytest-homeassistant-custom-component` installed.
+
+### Prerequisites
+
+1.  **Python 3.9+**: Ensure you have a compatible Python version.
+2.  **Install `pytest` and `pytest-homeassistant-custom-component`**:
+
+    ```bash
+    pip install pytest pytest-homeassistant-custom-component
+    ```
+
+### Running Tests
+
+Navigate to the root directory of this repository and execute `pytest`:
+
+```bash
+pytest
+```
+
+This will discover and run all tests within the `custom_components/sttbridge/tests/` directory.
 
 ## License
 

@@ -1,5 +1,7 @@
 {
   "name": "MacOS STT Bridge",
   "render_readme": true,
-  "domains": ["stt", "tts"]
+  "domains": ["stt", "tts"],
+  "hacs": "0.24.0",
+  "homeassistant": "2023.1.0"
 }
