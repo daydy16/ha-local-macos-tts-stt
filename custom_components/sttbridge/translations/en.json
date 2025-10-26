@@ -1,0 +1,22 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Connect to STT Bridge",
+                "description": "Enter the connection details for your STT Bridge server.",
+                "data": {
+                    "host": "Host",
+                    "port": "Port",
+                    "token": "Token (optional)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to the server. Check host and port.",
+            "unknown": "Unknown error occurred."
+        },
+        "abort": {
+            "already_configured": "This device is already configured."
+        }
+    }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "MacOS STT Bridge",
+  "render_readme": true,
+  "domains": ["stt", "tts"]
+}

@@ -1,0 +1,22 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "STT Bridge verbinden",
+                "description": "Gib die Verbindungsdetails für deinen STT Bridge Server ein.",
+                "data": {
+                    "host": "Host",
+                    "port": "Port",
+                    "token": "Token (optional)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Verbindung zum Server fehlgeschlagen. Überprüfe Host und Port.",
+            "unknown": "Unbekannter Fehler."
+        },
+        "abort": {
+            "already_configured": "Dieses Gerät ist bereits konfiguriert."
+        }
+    }
+}
