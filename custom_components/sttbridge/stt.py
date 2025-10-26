@@ -72,7 +72,7 @@ class STTBridgeSTTProvider(stt.SpeechToTextEntity):
     @property
     def supported_bit_rates(self) -> list[stt.AudioBitRates]:
         """Return a list of supported audio bit rates."""
-        return [stt.AudioBitRates.BIT_16]
+        return [stt.AudioBitRates.BITRATE_16]
 
     @property
     def supported_channels(self) -> list[stt.AudioChannels]:

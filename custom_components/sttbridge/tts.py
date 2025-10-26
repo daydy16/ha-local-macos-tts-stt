@@ -5,7 +5,7 @@ import logging
 from typing import Any
 
 import aiohttp
-from homeassistant.components.tts import Provider, TtsAudioType
+from homeassistant.components.tts import TextToSpeechEntity, TtsAudioType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -31,7 +31,7 @@ async def async_setup_entry(
     async_add_entities([STTBridgeProvider(hass, base_url, token, config_entry)])
 
 
-class STTBridgeProvider(Provider):
+class STTBridgeProvider(TextToSpeechEntity):
     """The STT Bridge TTS provider."""
 
     def __init__(
@@ -46,12 +46,8 @@ class STTBridgeProvider(Provider):
         self._base_url = base_url
         self._token = token
         self._config_entry = config_entry
-        self.name = "STT Bridge"
-
-    @property
-    def unique_id(self) -> str:
-        """Return the unique ID of the TTS platform."""
-        return self._config_entry.entry_id
+        self._attr_name = "STT Bridge TTS"
+        self._attr_unique_id = f"{config_entry.entry_id}_tts"
 
     @property
     def default_language(self) -> str:
