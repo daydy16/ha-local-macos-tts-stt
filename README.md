@@ -1,5 +1,7 @@
 # Home Assistant Local macOS TTS/STT Bridge
 
+<img src="icon.png" width="200" align="right" alt="STT Bridge Logo">
+
 A custom component for Home Assistant that acts as a bridge to a local server on macOS for Text-to-Speech (TTS) and Speech-to-Text (STT).
 
 ## Overview

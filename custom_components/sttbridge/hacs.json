@@ -3,5 +3,6 @@
   "render_readme": true,
   "domains": ["stt", "tts"],
   "hacs": "0.24.0",
-  "homeassistant": "2023.1.0"
+  "homeassistant": "2023.1.0",
+  "image": "https://raw.githubusercontent.com/daydy16/ha-local-macos-tts-stt/main/icon.png"
 }

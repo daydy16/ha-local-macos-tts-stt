@@ -6,6 +6,6 @@
   "issue_tracker": "https://github.com/daydy16/ha-local-macos-tts-stt/issues",
   "codeowners": [],
   "iot_class": "local_polling",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "requirements": []
 }
