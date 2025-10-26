@@ -114,9 +114,14 @@ class STTBridgeSTTProvider(stt.SpeechToTextEntity):
             metadata.bit_rate,
         )
         
+        # Determine content type based on audio format
+        # HA sends WAV format, but it might be raw PCM with WAV headers
+        # Send metadata so backend can handle it properly
         headers = {
             "Content-Type": "audio/wav",
             "X-Language": metadata.language,
+            "X-Sample-Rate": str(metadata.sample_rate.value),
+            "X-Channel-Count": str(metadata.channel.value),
         }
         if self._token:
             headers["Authorization"] = f"Bearer {self._token}"
