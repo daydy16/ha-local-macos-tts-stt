@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Release script for STT/TTS Bridge Home Assistant integration
-# Usage: ./release.sh <version> [release-notes]
+# Usage: ./release.sh <version> [release-notes] [--pre-release]
 # Example: ./release.sh 0.1.7 "Fixed STT audio header compatibility"
+# Example: ./release.sh 0.1.8-beta "Testing new features" --pre-release
 
 set -e  # Exit on error
 
@@ -14,13 +15,24 @@ NC='\033[0m' # No Color
 
 if [ -z "$1" ]; then
     echo -e "${RED}Error: Version number required${NC}"
-    echo "Usage: ./release.sh <version> [release-notes]"
+    echo "Usage: ./release.sh <version> [release-notes] [--pre-release]"
     echo "Example: ./release.sh 0.1.7 'Fixed STT audio header compatibility'"
+    echo "Example: ./release.sh 0.1.8-beta 'Testing new features' --pre-release"
     exit 1
 fi
 
 VERSION="$1"
 RELEASE_NOTES="${2:-Release v$VERSION}"
+PRE_RELEASE=""
+
+# Check for --pre-release flag
+if [[ "$3" == "--pre-release" ]] || [[ "$2" == "--pre-release" ]]; then
+    PRE_RELEASE="--prerelease"
+    echo -e "${YELLOW}Creating PRE-RELEASE${NC}"
+    if [[ "$2" == "--pre-release" ]]; then
+        RELEASE_NOTES="Pre-release v$VERSION"
+    fi
+fi
 
 echo -e "${YELLOW}Creating release v$VERSION${NC}"
 echo "Release notes: $RELEASE_NOTES"
@@ -48,7 +60,12 @@ git push origin "v$VERSION"
 echo -e "${YELLOW}Creating GitHub release...${NC}"
 gh release create "v$VERSION" \
     --title "v$VERSION" \
-    --notes "$RELEASE_NOTES"
+    --notes "$RELEASE_NOTES" \
+    $PRE_RELEASE
 
-echo -e "${GREEN}✓ Release v$VERSION created successfully!${NC}"
+if [[ -n "$PRE_RELEASE" ]]; then
+    echo -e "${GREEN}✓ Pre-release v$VERSION created successfully!${NC}"
+else
+    echo -e "${GREEN}✓ Release v$VERSION created successfully!${NC}"
+fi
 echo -e "${GREEN}✓ Available at: https://github.com/daydy16/ha-local-macos-tts-stt/releases/tag/v$VERSION${NC}"
