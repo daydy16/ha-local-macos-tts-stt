@@ -45,7 +45,7 @@ class STTBridgeSTTProvider(stt.SpeechToTextEntity):
         self._base_url = base_url
         self._token = token
         self._config_entry = config_entry
-        self._attr_name = "STT Bridge"
+        self._attr_name = "STT/TTS Bridge STT"
         self._attr_unique_id = config_entry.entry_id
 
     @property
@@ -77,7 +77,7 @@ class STTBridgeSTTProvider(stt.SpeechToTextEntity):
     @property
     def supported_channels(self) -> list[stt.AudioChannels]:
         """Return a list of supported audio channels."""
-        return [stt.AudioChannels.MONO]
+        return [stt.AudioChannels.CHANNEL_MONO]
 
     async def async_process_audio_stream(
         self, metadata: stt.SpeechMetadata, stream: stt.AudioStream

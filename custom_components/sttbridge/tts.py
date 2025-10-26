@@ -46,7 +46,7 @@ class STTBridgeProvider(TextToSpeechEntity):
         self._base_url = base_url
         self._token = token
         self._config_entry = config_entry
-        self._attr_name = "STT Bridge TTS"
+        self._attr_name = "STT/TTS Bridge TTS"
         self._attr_unique_id = f"{config_entry.entry_id}_tts"
 
     @property
