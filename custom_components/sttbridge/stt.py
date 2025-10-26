@@ -84,6 +84,36 @@ class STTBridgeSTTProvider(stt.SpeechToTextEntity):
     ) -> stt.SpeechResult:
         """Process an audio stream."""
         session = async_get_clientsession(self.hass)
+        
+        # Collect all audio data from stream
+        _LOGGER.debug("Starting to collect audio stream")
+        audio_data = b""
+        chunk_count = 0
+        
+        try:
+            async for chunk in stream:
+                audio_data += chunk
+                chunk_count += 1
+        except Exception as e:
+            _LOGGER.error("Error reading audio stream: %s", e)
+            return stt.SpeechResult(None, stt.SpeechResultState.ERROR)
+        
+        if not audio_data:
+            _LOGGER.error("Received empty audio stream")
+            return stt.SpeechResult(None, stt.SpeechResultState.ERROR)
+        
+        _LOGGER.info(
+            "Collected audio: %d bytes in %d chunks (lang=%s, fmt=%s, codec=%s, rate=%s, ch=%s, bits=%s)",
+            len(audio_data),
+            chunk_count,
+            metadata.language,
+            metadata.format,
+            metadata.codec,
+            metadata.sample_rate,
+            metadata.channel,
+            metadata.bit_rate,
+        )
+        
         headers = {
             "Content-Type": "audio/wav",
             "X-Language": metadata.language,
@@ -92,24 +122,32 @@ class STTBridgeSTTProvider(stt.SpeechToTextEntity):
             headers["Authorization"] = f"Bearer {self._token}"
 
         try:
+            _LOGGER.debug("Sending %d bytes to %s/stt", len(audio_data), self._base_url)
             async with session.post(
-                f"{self._base_url}/stt", data=stream, headers=headers
+                f"{self._base_url}/stt", data=audio_data, headers=headers
             ) as resp:
                 if resp.status != 200:
+                    error_text = await resp.text()
                     _LOGGER.error(
-                        "Error getting STT result: %s - %s",
+                        "STT server error %s: %s",
                         resp.status,
-                        await resp.text(),
+                        error_text,
                     )
                     return stt.SpeechResult(None, stt.SpeechResultState.ERROR)
 
                 result = await resp.json()
                 text = result.get("text")
+                
                 if text:
+                    _LOGGER.info("STT success: '%s'", text)
                     return stt.SpeechResult(text, stt.SpeechResultState.SUCCESS)
 
-                _LOGGER.warning("STT result from server did not contain text: %s", result)
+                _LOGGER.warning("STT result missing text: %s", result)
                 return stt.SpeechResult(None, stt.SpeechResultState.ERROR)
+                
         except aiohttp.ClientError as e:
-            _LOGGER.error("Error communicating with STT Bridge for STT: %s", e)
+            _LOGGER.error("Network error with STT server: %s", e)
+            return stt.SpeechResult(None, stt.SpeechResultState.ERROR)
+        except Exception as e:
+            _LOGGER.error("Unexpected STT error: %s", e, exc_info=True)
             return stt.SpeechResult(None, stt.SpeechResultState.ERROR)
