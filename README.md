@@ -1,5 +1,15 @@
 # Home Assistant STT/TTS Bridge Integration 🏠🎤
 
+> [!WARNING]
+> **Deprecated, no longer maintained.**
+> This was a personal experiment and is no longer in use.
+> Native alternatives now exist for local Apple speech in
+> Home Assistant, for example
+> [wyoming-apple-speech](https://github.com/FI-153/wyoming-apple-speech)
+> (Wyoming STT/TTS server for macOS) or the voice tools server
+> of the Home Assistant Companion App for macOS.
+> This repository is archived and read-only.
+
 > ⚠️ **Experimental & AI-Generated** - This integration was developed with AI assistance and is in active development. Expect bugs and breaking changes!
 
 Home Assistant Custom Integration for connecting to the [macOS STT/TTS Bridge Server](https://github.com/daydy16/macos-stt-tts-bridge).
